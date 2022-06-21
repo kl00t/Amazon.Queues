@@ -9,5 +9,12 @@ var publisher = new SqsPublisher(sqsClient);
 await publisher.PublishAsync("customers", new CustomerCreated
 {
     Id = 1,
-    FullName = "Scott Richard Vaughan"
+    FullName = "Scott Vaughan"
+});
+
+await Task.Delay(5000);
+
+await publisher.PublishAsync("customers", new CustomerDeleted
+{
+    Id = 1
 });
