@@ -1,5 +1,6 @@
 ﻿using Amazon.SQS;
 using Amazon.SQS.Model;
+using Contracts.Messages;
 using System.Text.Json;
 
 namespace Publisher;
@@ -13,13 +14,24 @@ public class SqsPublisher
         _sqs = sqs;
     }
 
-    public async Task PublishAsync<T>(string queueName, T message)
+    public async Task PublishAsync<TMessage>(string queueName, TMessage message)
+        where TMessage : IMessage
     {
         var queueUrl = await _sqs.GetQueueUrlAsync(queueName);
         var request = new SendMessageRequest
         {
             QueueUrl = queueUrl.QueueUrl,
-            MessageBody = JsonSerializer.Serialize(message)
+            MessageBody = JsonSerializer.Serialize(message),
+            MessageAttributes = new Dictionary<string, MessageAttributeValue>
+            {
+                {
+                    nameof(IMessage.MessageTypeName), new MessageAttributeValue
+                    {
+                        StringValue = message.MessageTypeName,
+                        DataType = "String"
+                    }
+                }
+            }
         };
 
         await _sqs.SendMessageAsync(request);

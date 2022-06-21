@@ -1,6 +1,6 @@
 ﻿using Amazon.SQS;
 using Publisher;
-using Publisher.Messages;
+using Contracts.Messages;
 
 var sqsClient = new AmazonSQSClient(Amazon.RegionEndpoint.EUWest2);
 
